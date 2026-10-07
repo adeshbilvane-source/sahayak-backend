@@ -1,15 +1,19 @@
 const mysql = require('mysql2');
+require('dotenv').config();
 
-// Render par hamesha DATABASE_URL (Connection String) milti hai
-// Agar cloud link nahi hoga, toh backup ke liye local XAMPP ka chalega
-const db = mysql.createPool(process.env.DATABASE_URL || {
-    host: 'localhost',
-    user: 'root',
-    password: '', 
-    database: 'sahayak_db',
+// .env ke individual variables ko use karne ke liye setup
+const db = mysql.createPool({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 db.getConnection((err, connection) => {
