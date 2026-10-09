@@ -1,8 +1,16 @@
 const mysql = require('mysql2');
 require('dotenv').config();
 
-// .env ke individual variables ko use karne ke liye setup
-const db = mysql.createPool({
+// Supports both individual env vars and DATABASE_URL
+const dbConfig = process.env.DATABASE_URL ? {
+    uri: process.env.DATABASE_URL,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    ssl: {
+        rejectUnauthorized: false
+    }
+} : {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
     user: process.env.DB_USER,
@@ -14,7 +22,9 @@ const db = mysql.createPool({
     ssl: {
         rejectUnauthorized: false
     }
-});
+};
+
+const db = mysql.createPool(dbConfig);
 
 db.getConnection((err, connection) => {
     if (err) {
